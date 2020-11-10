@@ -25,6 +25,14 @@ isot_true=pd.read_csv("C:\\Users\PORTATIL\Desktop\TFG\dataset_tfg\isot_dataset\T
 isot_fake=pd.read_csv("C:\\Users\PORTATIL\Desktop\TFG\dataset_tfg\isot_dataset\Fake.csv")
 append_TF=isot_true.append(isot_fake,ignore_index=True)
 
+nan_value = float("NaN")
+
+#Convert NaN values to empty string
+
+append_TF.replace("", nan_value, inplace=True)
+
+append_TF.dropna( inplace=True)
+
 #definicion del corpus
 
 X= append_TF['body'].astype(str) +append_TF['title'].astype(str)
@@ -48,7 +56,13 @@ df = df.sort_values('TF-IDF',ascending=False)
 print (df.head(25))
 
 
+# Entrenar y transformar variable X_train conseguida al dividir los datos (texto+título de las noticias) en un vector numérico
 
+# Definir modelo de clasificación, Naive Bayes, Decision Tree y Random Forest. 
+
+# Entrenar los modelos con X_train e y_train
+
+# Evaluar los modelos usando X_test e y_test
 
 
 
