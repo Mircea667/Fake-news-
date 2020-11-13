@@ -66,7 +66,7 @@ naive_bayes_classifier=naive_bayes_classifier.fit(X_train2, y_train)
 pred_NB = naive_bayes_classifier.predict(X_test2)
 
 #ENTRENAMIENTO DECISION TREE.
-decision_tree_classifier=tree.DecisionTreeClassifier()
+decision_tree_classifier=DecisionTreeClassifier()
 decision_tree_classifier=decision_tree_classifier.fit(X_train2, y_train)
 
 pred_DT=decision_tree_classifier.predict(X_test2)
