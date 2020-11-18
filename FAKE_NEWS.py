@@ -19,6 +19,8 @@ from sklearn.model_selection import train_test_split
 from nltk.corpus import stopwords
 from sklearn.model_selection import ShuffleSplit
 from sklearn.model_selection import learning_curve
+from scipy.sparse import coo_matrix
+from sklearn.utils import shuffle
 
 
 # Cargar CSV
@@ -37,9 +39,10 @@ print((df.columns))
 
 # Definición de los datos
 
-X = df['title'].astype(str) + ' ' + df['body'].astype(str)
+X= df['title'].astype(str) + ' ' + df['body'].astype(str)
 y = df['Category']
-
+W1=X
+z=y
 
 #y_list=y.tolist()
 
@@ -58,6 +61,12 @@ X_vector=tfIdfVectorizer.transform(X_test)
 X_train2=X_vectorizer.toarray()
 X_test2=X_vector.toarray()
 
+W_vectorizer=tfIdfVectorizer.fit_transform(W1)
+W_learning=W_vectorizer.toarray()
+
+W = coo_matrix(W_learning)
+
+W,z=shuffle(W,z)
 
 #ENTRENAMIENTO NAIVE BAYES
 # Definir modelo de clasificación, Naive Bayes, Decision Tree y Random Forest. 
@@ -88,7 +97,7 @@ score3 = metrics.accuracy_score(y_test,pred_RF)
 
 ##LEARNING CURVES
 
-def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
+def plot_learning_curve(estimator, title, W, z, axes=None, ylim=None, cv=None,
                         n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5)):
 
     if axes is None:
@@ -101,9 +110,7 @@ def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
     axes[0].set_ylabel("Score")
 
     train_sizes, train_scores, test_scores, fit_times, _ = \
-        learning_curve(estimator, X, y, cv=cv, n_jobs=n_jobs,
-                       train_sizes=train_sizes,
-                       return_times=True)
+        learning_curve(estimator, W,z, cv=cv, n_jobs=n_jobs, train_sizes=train_size)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
@@ -146,7 +153,7 @@ def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
     return plt
 
 
-fig, axes = plt.subplots(3, 1,figsize=(10, 15))
+fig, axes = plt.subplots(3,2,figsize=(10, 15))
 
 #X, y = load_digits(return_X_y=True)
 
@@ -156,7 +163,7 @@ title = "Learning Curves (Naive Bayes)"
 cv = ShuffleSplit(n_splits=100, test_size=0.3, random_state=0)
 
 estimator1 = GaussianNB()
-plot_learning_curve(estimator1, title, X, y,
+plot_learning_curve(estimator1, title, W_learning, z,
                     cv=cv, n_jobs=-1)
 
 title2 = r"Learning Curves (DT)"
@@ -164,7 +171,7 @@ title2 = r"Learning Curves (DT)"
 cv = ShuffleSplit(n_splits=100, test_size=0.3, random_state=0)
 
 estimator2 = DecissionTreeClassifier()
-plot_learning_curve(estimator2, title2, X, y, 
+plot_learning_curve(estimator2, title2, W_learning, z, 
                     cv=cv, n_jobs=-1)
 
 title3 = r"Learning Curves (RF)"
@@ -172,7 +179,7 @@ title3 = r"Learning Curves (RF)"
 cv = ShuffleSplit(n_splits=100, test_size=0.3, random_state=0)
 
 estimator3 = RandomForestClassifier()
-plot_learning_curve(estimator2, title3, X, y,
+plot_learning_curve(estimator3, title3, W_learning, z,
                     cv=cv, n_jobs=-1)
 plt.show()
 
