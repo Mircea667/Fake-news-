@@ -10,7 +10,7 @@ import nltk
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
@@ -70,7 +70,7 @@ W,z=shuffle(W,z)
 
 #ENTRENAMIENTO NAIVE BAYES
 # Definir modelo de clasificación, Naive Bayes, Decision Tree y Random Forest. 
-naive_bayes_classifier = GaussianNB()
+naive_bayes_classifier = BernoulliNB()
 naive_bayes_classifier=naive_bayes_classifier.fit(X_train2, y_train)
 
 pred_NB = naive_bayes_classifier.predict(X_test2)
@@ -96,101 +96,72 @@ score2 = metrics.accuracy_score(y_test,pred_DT)
 score3 = metrics.accuracy_score(y_test,pred_RF)
 
 ##LEARNING CURVES
+#NAIVE BAYES
+train_sizes, train_scores, test_scores = learning_curve(BernoulliNB(), W, z, cv=10, scoring='accuracy', n_jobs=-1, train_sizes=np.linspace(0.01, 1.0, 50))
 
-def plot_learning_curve(estimator, title, W, z, axes=None, ylim=None, cv=None,
-                        n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5)):
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
 
-    if axes is None:
-        _, axes = plt.subplots(1, 3, figsize=(20, 5))
+test_mean = np.mean(test_scores, axis=1)
+test_std = np.std(test_scores, axis=1)
 
-    axes[0].set_title(title)
-    if ylim is not None:
-        axes[0].set_ylim(*ylim)
-    axes[0].set_xlabel("Training examples")
-    axes[0].set_ylabel("Score")
+plt.subplots(1, figsize=(10,10))
+plt.plot(train_sizes, train_mean, '--', color="#111111",  label="Training score")
+plt.plot(train_sizes, test_mean, color="#111111", label="Cross-validation score")
 
-    train_sizes, train_scores, test_scores, fit_times, _ = \
-        learning_curve(estimator, W,z, cv=cv, n_jobs=n_jobs, train_sizes=train_size)
-    train_scores_mean = np.mean(train_scores, axis=1)
-    train_scores_std = np.std(train_scores, axis=1)
-    test_scores_mean = np.mean(test_scores, axis=1)
-    test_scores_std = np.std(test_scores, axis=1)
-    fit_times_mean = np.mean(fit_times, axis=1)
-    fit_times_std = np.std(fit_times, axis=1)
+plt.fill_between(train_sizes, train_mean - train_std, train_mean + train_std, color="#DDDDDD")
+plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, color="#DDDDDD")
 
-    # Plot learning curve
-    axes[0].grid()
-    axes[0].fill_between(train_sizes, train_scores_mean - train_scores_std,
-                         train_scores_mean + train_scores_std, alpha=0.1,
-                         color="r")
-    axes[0].fill_between(train_sizes, test_scores_mean - test_scores_std,
-                         test_scores_mean + test_scores_std, alpha=0.1,
-                         color="g")
-    axes[0].plot(train_sizes, train_scores_mean, 'o-', color="r",
-                 label="Training score")
-    axes[0].plot(train_sizes, test_scores_mean, 'o-', color="g",
-                 label="Cross-validation score")
-    axes[0].legend(loc="best")
-
-    # Plot n_samples vs fit_times
-    axes[1].grid()
-    axes[1].plot(train_sizes, fit_times_mean, 'o-')
-    axes[1].fill_between(train_sizes, fit_times_mean - fit_times_std,
-                         fit_times_mean + fit_times_std, alpha=0.1)
-    axes[1].set_xlabel("Training examples")
-    axes[1].set_ylabel("fit_times")
-    axes[1].set_title("Scalability of the model")
-
-    # Plot fit_time vs score
-    axes[2].grid()
-    axes[2].plot(fit_times_mean, test_scores_mean, 'o-')
-    axes[2].fill_between(fit_times_mean, test_scores_mean - test_scores_std,
-                         test_scores_mean + test_scores_std, alpha=0.1)
-    axes[2].set_xlabel("fit_times")
-    axes[2].set_ylabel("Score")
-    axes[2].set_title("Performance of the model")
-
-    return plt
-
-
-fig, axes = plt.subplots(3,2,figsize=(10, 15))
-
-#X, y = load_digits(return_X_y=True)
-
-title = "Learning Curves (Naive Bayes)"
-# Cross validation with 100 iterations to get smoother mean test and train
-# score curves, each time with 20% data randomly selected as a validation set.
-cv = ShuffleSplit(n_splits=100, test_size=0.3, random_state=0)
-
-estimator1 = GaussianNB()
-plot_learning_curve(estimator1, title, W_learning, z,
-                    cv=cv, n_jobs=-1)
-
-title2 = r"Learning Curves (DT)"
-# SVC is more expensive so we do a lower number of CV iterations:
-cv = ShuffleSplit(n_splits=100, test_size=0.3, random_state=0)
-
-estimator2 = DecissionTreeClassifier()
-plot_learning_curve(estimator2, title2, W_learning, z, 
-                    cv=cv, n_jobs=-1)
-
-title3 = r"Learning Curves (RF)"
-# SVC is more expensive so we do a lower number of CV iterations:
-cv = ShuffleSplit(n_splits=100, test_size=0.3, random_state=0)
-
-estimator3 = RandomForestClassifier()
-plot_learning_curve(estimator3, title3, W_learning, z,
-                    cv=cv, n_jobs=-1)
+plt.title("Learning Curve")
+plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
+plt.tight_layout()
 plt.show()
 
 
+#DECISION TREE
+train_sizes2, train_scores2, test_scores2 = learning_curve(DecissionTreeClassifier(), W, z, cv=10, scoring='accuracy', n_jobs=-1, train_sizes=np.linspace(0.01, 1.0, 50))
 
-#lc1=learning_curve(GaussianNB(), X_train2, y_train)
-#lc1.show()
-#lc2=learning_curve(DecisionTreeClassifier(), X_train2, y_train)
-#lc2.show()
-#lc3=learning_curve(RandomForestClassifier(), X_train2, y_train )
-#lc3.show()
+train_mean2 = np.mean(train_scores2, axis=1)
+train_std2 = np.std(train_scores2, axis=1)
+
+test_mean2 = np.mean(test_scores2, axis=1)
+test_std2 = np.std(test_scores2, axis=1)
+
+plt.subplots(1, figsize=(10,10))
+plt.plot(train_sizes2, train_mean2, '--', color="#111111",  label="Training score")
+plt.plot(train_sizes2, test_mean2, color="#111111", label="Cross-validation score")
+
+plt.fill_between(train_sizes2, train_mean2 - train_std2, train_mean2 + train_std2, color="#DDDDDD")
+plt.fill_between(train_sizes2, test_mean2 - test_std2, test_mean2 + test_std2, color="#DDDDDD")
+
+plt.title("Learning Curve")
+plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
+plt.tight_layout()
+plt.show()
+
+
+#RANDOM FOREST
+train_sizes3, train_scores3, test_scores3 = learning_curve(RandomForestClassifier(), W, z, cv=10, scoring='accuracy', n_jobs=-1, train_sizes=np.linspace(0.01, 1.0, 50))
+
+train_mean3 = np.mean(train_scores3, axis=1)
+train_std3 = np.std(train_scores3, axis=1)
+
+test_mean3 = np.mean(test_scores3, axis=1)
+test_std3 = np.std(test_scores3, axis=1)
+
+plt.subplots(1, figsize=(10,10))
+plt.plot(train_sizes3, train_mean3, '--', color="#111111",  label="Training score")
+plt.plot(train_sizes3, test_mean3, color="#111111", label="Cross-validation score")
+
+plt.fill_between(train_sizes3, train_mean3 - train_std3, train_mean3 + train_std3, color="#DDDDDD")
+plt.fill_between(train_sizes3, test_mean3 - test_std3, test_mean3 + test_std3, color="#DDDDDD")
+
+plt.title("Learning Curve")
+plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
+plt.tight_layout()
+plt.show()
+
+
 #MATRIZ DE CONFUSION DEL NAIVE BAYES
 print("accuracy:   %0.3f" % score1)
 
