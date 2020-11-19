@@ -106,8 +106,8 @@ test_mean = np.mean(test_scores, axis=1)
 test_std = np.std(test_scores, axis=1)
 
 plt.subplots(1, figsize=(10,10))
-plt.plot(train_sizes, train_mean, '--', color="#111111",  label="Training score")
-plt.plot(train_sizes, test_mean, color="#111111", label="Cross-validation score")
+plt.plot(train_sizes, train_mean, '--', color="m",  label="Training score")
+plt.plot(train_sizes, test_mean, color="y", label="Cross-validation score")
 
 plt.fill_between(train_sizes, train_mean - train_std, train_mean + train_std, color="#DDDDDD")
 plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, color="#DDDDDD")
@@ -115,11 +115,12 @@ plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, color=
 plt.title("Learning Curve")
 plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
 plt.tight_layout()
+plt.savefig('NB')
 plt.show()
 
 
 #DECISION TREE
-train_sizes2, train_scores2, test_scores2 = learning_curve(DecissionTreeClassifier(), W, z, cv=10, scoring='accuracy', n_jobs=-1, train_sizes=np.linspace(0.01, 1.0, 50))
+train_sizes2, train_scores2, test_scores2 = learning_curve(DecisionTreeClassifier(), W, z, cv=10, scoring='accuracy', n_jobs=-1, train_sizes=np.linspace(0.01, 1.0, 50))
 
 train_mean2 = np.mean(train_scores2, axis=1)
 train_std2 = np.std(train_scores2, axis=1)
@@ -128,8 +129,8 @@ test_mean2 = np.mean(test_scores2, axis=1)
 test_std2 = np.std(test_scores2, axis=1)
 
 plt.subplots(1, figsize=(10,10))
-plt.plot(train_sizes2, train_mean2, '--', color="#111111",  label="Training score")
-plt.plot(train_sizes2, test_mean2, color="#111111", label="Cross-validation score")
+plt.plot(train_sizes2, train_mean2, '--', color="m",  label="Training score")
+plt.plot(train_sizes2, test_mean2, color="y", label="Cross-validation score")
 
 plt.fill_between(train_sizes2, train_mean2 - train_std2, train_mean2 + train_std2, color="#DDDDDD")
 plt.fill_between(train_sizes2, test_mean2 - test_std2, test_mean2 + test_std2, color="#DDDDDD")
@@ -137,6 +138,7 @@ plt.fill_between(train_sizes2, test_mean2 - test_std2, test_mean2 + test_std2, c
 plt.title("Learning Curve")
 plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
 plt.tight_layout()
+plt.savefig('DT')
 plt.show()
 
 
@@ -150,8 +152,8 @@ test_mean3 = np.mean(test_scores3, axis=1)
 test_std3 = np.std(test_scores3, axis=1)
 
 plt.subplots(1, figsize=(10,10))
-plt.plot(train_sizes3, train_mean3, '--', color="#111111",  label="Training score")
-plt.plot(train_sizes3, test_mean3, color="#111111", label="Cross-validation score")
+plt.plot(train_sizes3, train_mean3, '--', color="m",  label="Training score")
+plt.plot(train_sizes3, test_mean3, color="y", label="Cross-validation score")
 
 plt.fill_between(train_sizes3, train_mean3 - train_std3, train_mean3 + train_std3, color="#DDDDDD")
 plt.fill_between(train_sizes3, test_mean3 - test_std3, test_mean3 + test_std3, color="#DDDDDD")
@@ -159,6 +161,7 @@ plt.fill_between(train_sizes3, test_mean3 - test_std3, test_mean3 + test_std3, c
 plt.title("Learning Curve")
 plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
 plt.tight_layout()
+plt.savefig('DT')
 plt.show()
 
 
